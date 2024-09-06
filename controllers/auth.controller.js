@@ -2,20 +2,27 @@ const { response } = require("express");
 const bcrypt = require("bcryptjs");
 
 const User = require("../models/User");
-const { generateJWT } = require("../helpers/jwt");
+const { generateJWT } = require("../helpers");
 
 const getValidateToken = async (req, res = response) => {
     const { uid, name } = req;
 
-    //Generate JWT
-    const token = await generateJWT(uid, name);
+    try {
+        //Generate JWT
+        const token = await generateJWT(uid, name);
 
-    res.json({
-        ok: true,
-        uid,
-        name,
-        token,
-    });
+        res.json({
+            ok: true,
+            uid,
+            name,
+            token,
+        });
+    } catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: "Contact administration for managament",
+        });
+    }
 };
 
 const postCreateUser = async (req, res = response) => {
@@ -25,7 +32,7 @@ const postCreateUser = async (req, res = response) => {
         let user = await User.findOne({ email });
 
         if (user) {
-            return res.status(400).json({
+            return res.status(404).json({
                 ok: false,
                 msg: "User already exists",
             });
@@ -49,7 +56,6 @@ const postCreateUser = async (req, res = response) => {
             token,
         });
     } catch (error) {
-        console.log(error);
         res.status(500).json({
             ok: false,
             msg: "Contact administration for managament",
@@ -64,7 +70,7 @@ const postLoginUser = async (req, res = response) => {
         const user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(400).json({
+            return res.status(404).json({
                 ok: false,
                 msg: "User not found",
             });
@@ -75,7 +81,7 @@ const postLoginUser = async (req, res = response) => {
         const validPassword = bcrypt.compareSync(password, user.password);
 
         if (!validPassword) {
-            return res.status(400).json({
+            return res.status(404).json({
                 ok: false,
                 msg: "Incorrect password",
             });
@@ -91,7 +97,6 @@ const postLoginUser = async (req, res = response) => {
             token,
         });
     } catch (error) {
-        console.log(error);
         res.status(500).json({
             ok: false,
             msg: "LOGIN - Contact administration for managament",
