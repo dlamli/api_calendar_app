@@ -27,9 +27,6 @@ router.post(
         check("title", "Event title is required").not().isEmpty(),
         check("start", "Start Date is required").custom(isDate),
         check("end", "End Date is required").custom(isDate),
-        check("end", "End Date must be highter than Start Date").custom(
-            checkEndDate
-        ),
         validateFields,
     ],
     postCreateEvent
