@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 require("dotenv").config();
 const authRoutes = require("./routes/auth.routes");
 const eventRoutes = require("./routes/event.routes");
@@ -14,7 +15,9 @@ dbConnection();
 app.use(cors());
 
 // PUBLIC DIRECTORY
-app.use(express.static("public"));
+app.use("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "public/index.html"));
+});
 
 app.use(express.json());
 
